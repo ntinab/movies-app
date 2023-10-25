@@ -1,0 +1,592 @@
+openapi: 3.0.3
+info:
+  title: C# Cinema API Challenge - Extension Criteria
+  description: |-
+  version: 0.2.2
+
+servers:
+  - url: http://localhost:4000
+tags:
+  - name: customers
+  - name: movies
+  - name: screenings
+  - name: tickets
+paths:
+  /customers:
+    post:
+      tags:
+        - customers
+      summary: Create a customer
+      description: Create a new customer account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomer'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleCustomer'
+    get:
+      tags:
+        - customers
+      summary: Get all customers
+      description: Get a list of every customer.
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllCustomers'
+  /customers/{id}:
+    put:
+      tags:
+        - customers
+      summary: Update a customer
+      description: Update an existing customer. If any field is not provided, the original value should not be changed. Any combination of fields can be updated.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the customer to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomer'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleCustomer'
+    delete:
+      tags:
+        - customers
+      summary: Delete a customer
+      description: Delete an existing customer. When deleting data, it's useful to send the deleted record back to the client so they can re-create it if deletion was a mistake.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the customer to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleCustomer'
+
+  /movies:
+    post:
+      tags:
+        - movies
+      summary: Create a movie
+      description: Create a new movie. Optionally, a screenings array can be provided to create screenings when the movie gets created. If no screenings array is provided, the movie should be created as normal.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMovie'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleMovie'
+    get:
+      tags:
+        - movies
+      summary: Get all movies
+      description: Get a list of every movie.
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllMovies'
+  /movies/{id}:
+    put:
+      tags:
+        - movies
+      summary: Update a movie
+      description: Update an existing movie. If any field is not provided, the original value should not be changed. Any combination of fields can be updated.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the movie to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMovie'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleMovie'
+    delete:
+      tags:
+        - movies
+      summary: Delete a movie
+      description: Delete an existing movie. When deleting a movie, all of its screenings should also be deleted.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the movie to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleMovie'
+
+  /movies/{id}/screenings:
+    post:
+      tags:
+        - screenings
+      summary: Create a screening
+      description: Create a screening for an existing movie.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the movie to create a screening for
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScreening'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleScreening'
+    get:
+      tags:
+        - screenings
+      summary: Get all screenings
+      description: Get a list of every screening for a movie.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the movie to retrieve the screenings for
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllScreenings'
+
+  /customers/{customerId}/screenings/{screeningId}:
+    post:
+      tags:
+        - tickets
+      summary: Book a ticket
+      description: Create a new ticket for a particular customer and screening.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTicket'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleTicket'
+    get:
+      tags:
+        - tickets
+      summary: Get all tickets
+      description: Get a list of every ticket a customer has booked for a screening.
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllTickets'
+
+components:
+  schemas:
+    CreateCustomer:
+      type: object
+      required: [name, email, phone]
+      properties:
+        name:
+          type: string
+          example: Chris Wolstenholme
+        email:
+          type: email
+          format: email
+          example: chris@muse.mu
+        phone:
+          type: string
+          example: "+44729388192"
+    UpdateCustomer:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Chris Wolstenholme
+        email:
+          type: email
+          format: email
+          example: chris@muse.mu
+        phone:
+          type: string
+          example: "+44729388192"
+    SingleCustomer:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: Chris Wolstenholme
+            email:
+              type: string
+              example: chris@muse.mu
+            phone:
+              type: string
+              example: "+44729388192"
+            createdAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-14T11:01:56.633+00:00
+            updatedAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-14T11:01:56.633+00:00
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Chris Wolstenholme
+        email:
+          type: string
+          example: chris@muse.mu
+        phone:
+          type: string
+          example: "+44729388192"
+        createdAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-14T11:01:56.633+00:00
+        updatedAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-14T11:01:56.633+00:00
+    AllCustomers:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+
+    CreateMovie:
+      type: object
+      required: [ title, rating, description, runtimeMins ]
+      properties:
+        title:
+          type: string
+          example: Dodgeball
+        rating:
+          type: string
+          example: PG-13
+        description:
+          type: string
+          example: The greatest movie ever made.
+        runtimeMins:
+          type: integer
+          example: 126
+        screenings:
+          type: array
+          items:
+            type: object
+            required: [ screenNumber, capacity, startsAt ]
+            properties:
+              screenNumber:
+                type: integer
+                example: 5
+              capacity:
+                type: integer
+                example: 40
+              startsAt:
+                type: string
+                format: DateTime
+                pattern: YYYY-MM-DD HH:MM:SS
+                example: 2023-03-19 11:30:00
+    UpdateMovie:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Dodgeball
+        rating:
+          type: string
+          example: PG-13
+        description:
+          type: string
+          example: The greatest movie ever made.
+        runtimeMins:
+          type: integer
+          example: 126
+    SingleMovie:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: Dodgeball
+            rating:
+              type: string
+              example: PG-13
+            description:
+              type: string
+              example: The greatest movie ever made.
+            runtimeMins:
+              type: integer
+              example: 126
+            createdAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-14T11:01:56.633+00:00
+            updatedAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-14T11:01:56.633+00:00
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Dodgeball
+        rating:
+          type: string
+          example: PG-13
+        description:
+          type: string
+          example: The greatest movie ever made.
+        runtimeMins:
+          type: integer
+          example: 126
+        createdAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-14T11:01:56.633+00:00
+        updatedAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-14T11:01:56.633+00:00
+    AllMovies:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Movie'
+
+    CreateScreening:
+      type: object
+      required: [ screenNumber, capacity, startsAt ]
+      properties:
+        screenNumber:
+          type: integer
+          example: 5
+        capacity:
+          type: integer
+          example: 40
+        startsAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DD HH:MM:SS
+          example: 2023-03-19 11:30:00
+    SingleScreening:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            screenNumber:
+              type: integer
+              example: 5
+            capacity:
+              type: integer
+              example: 40
+            startsAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-19T11:30:00.000+00:00
+            createdAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-14T11:01:56.633+00:00
+            updatedAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-14T11:01:56.633+00:00
+    Screening:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        screenNumber:
+          type: integer
+          example: 5
+        capacity:
+          type: integer
+          example: 40
+        startsAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-19T11:30:00.000+00:00
+        createdAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-14T11:01:56.633+00:00
+        updatedAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-14T11:01:56.633+00:00
+    AllScreenings:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Screening'
+
+    CreateTicket:
+      type: object
+      required: [ numSeats ]
+      properties:
+        numSeats:
+          type: integer
+          example: 3
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        numSeats:
+          type: integer
+          example: 3
+        createdAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-14T11:01:56.633+00:00
+        updatedAt:
+          type: string
+          format: DateTime
+          pattern: YYYY-MM-DDTHH:MM:SS
+          example: 2023-03-14T11:01:56.633+00:00
+    SingleTicket:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            numSeats:
+              type: integer
+              example: 3
+            createdAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-14T11:01:56.633+00:00
+            updatedAt:
+              type: string
+              format: DateTime
+              pattern: YYYY-MM-DDTHH:MM:SS
+              example: 2023-03-14T11:01:56.633+00:00
+    AllTickets:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticket'
