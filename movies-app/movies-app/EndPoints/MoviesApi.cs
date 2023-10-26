@@ -1,7 +1,5 @@
-﻿using movies_app.Models;
-using movies_app.Repository;
+﻿using movies_app.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Builder;
 using movies_app.Models.MovieModel;
 using movies_app.Models.ScreeningModel;
 
@@ -24,30 +22,33 @@ namespace movies_app.EndPoints
         {
             try
             {
-                if (service.AddMovie(movie))
+                return await Task.Run(() =>
                 {
-                    if (movie.screenings.Any())
+                    if (service.AddMovie(movie))
                     {
-                        foreach (var screening in movie.screenings)
+                        if (movie.screenings.Any())
                         {
-                            Screening screening = new Screening()
+                            foreach (var screening in movie.screenings)
                             {
-                                ScreenNumber = screening.ScreenNumber,
-                                StartsAt = screening.StartsAt,
-                                Capacity = screening.Capacity,
-                                MovieId = movie.Id,
-                            };
+                                Screening screening = new Screening()
+                                {
+                                    MovieId = movie.Id,
+                                    IsAvailable = true,
+                                    Date = screening.Date, // add a date 
+                                    AvailableTickets = 100,
+                                };
 
-                            service.AddScreening(screening);
+                                service.AddScreening(screening);
+                            }
                         }
+                        return Results.Created($"/movies/{movie.Id}", new
+                        {
+                            Message = "The Movie with ID {movie.Id} was added successfully!",
+                            Movie = movie
+                        });
                     }
-                    return Results.Created($"/movies/{movie.Id}", new
-                    {
-                        Message = "The Movie with ID {movie.Id} was added successfully!",
-                        Movie = movie
-                    });
-                }
-                return Results.BadRequest("The Movie could not be added. Please check that all required fields are correct!");
+                    return Results.BadRequest("The Movie could not be added!");
+                });         
             }
             catch (Exception ex)
             {
@@ -91,7 +92,6 @@ namespace movies_app.EndPoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> UpdateMovie(Movie movie, ICinemaRepository service)
         {
@@ -109,21 +109,6 @@ namespace movies_app.EndPoints
                     }
                     return Results.NotFound($"No Movie with ID {movie.Id} was found!");
                 });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(ex.Message);
-            }
-        }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> DeleteMovie(int id, ICinemaRepository service)
-        {
-            try
-            {
-                if (service.DeleteMovie(id)) return Results.Ok($"The Movie with ID {id} was deleted successfully!");
-                return Results.NotFound($"No Movie with ID {id} was found!");
             }
             catch (Exception ex)
             {

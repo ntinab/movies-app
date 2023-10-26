@@ -12,12 +12,12 @@ namespace movies_app.Models.TicketModel
         public DateTime BookedDate { get; set; }
 
         [JsonIgnore]
-        [ForeignKey("User")]
+        // [ForeignKey("User")]
         public string UserUID { get; set; }
 
-        //[JsonIgnore]
+        [JsonIgnore]
         //[ForeignKey("Movie")]
-        //public int MovieId { get; set; }
+        public int MovieId { get; set; }
 
         [JsonIgnore]
         [ForeignKey("Screening")]

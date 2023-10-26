@@ -7,7 +7,22 @@
 
 
 - initializer !
-- apis !
+
+
+- screenings : add ticket & book ticket ?
+- delete screening & movie & ticket ?
+- add tickets when adding screening ?
+- tickets api ! 
+- movies api !
+
+
+- ticket with email input --- and not with user uid !
+- my tickets --- user uid !
+- users ?
+
+
+- get all tickets for a movie ?
+
 
 
 front-end

@@ -13,7 +13,7 @@ namespace movies_app.Models.ScreeningModel
         public IEnumerable<Ticket> Tickets { get; set; }
 
         [JsonIgnore]
-        [ForeignKey("Movie")]
+        // [ForeignKey("Movie")]
         public int MovieId { get; set; }
     }
 }
