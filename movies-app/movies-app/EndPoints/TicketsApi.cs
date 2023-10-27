@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using movies_app.Models.UserModel;
 using movies_app.Models.MovieModel;
 using movies_app.Models.TicketModel;
-using movies_app.Models.ScreeningModel;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using movies_app.Models.ScreeningModel;
 
 namespace movies_app.EndPoints
 {
@@ -21,54 +22,23 @@ namespace movies_app.EndPoints
             app.MapDelete("screenings/{screeningId}/tickets/{ticketId}", DeleteTicket);
         }
 
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //private static async Task<IResult> BookTicket(Ticket ticket, ICinemaRepository service)
-        //{
-        //    try
-        //    {
-        //        if (service.BookTicket(ticket))
-        //        {
-        //            return Results.Created($"/tickets/{ticket.Id}", new
-        //            {
-        //                Message = "The Ticket with ID {ticket.Id} was added successfully!",
-        //                Ticket = ticket
-        //            });
-        //        }
-        //        return Results.BadRequest("The Ticket could not be added!");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Results.Problem(ex.Message);
-        //    }
-        //}
-
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> BookTicket(TicketPost model, ICinemaRepository service)
+        private static async Task<IResult> BookTicket(int screeningId, Ticket ticket, ICinemaRepository service)
         {
             try
             {
                 return await Task.Run(() =>
                 {
-                    Ticket ticket = new Ticket()
+                    if (service.BookTicket(ticket))
                     {
-                        // UserUID = model.UserUID,
-                        // MovieId = model.MovieId,
-                        ScreeningId = model.ScreeningId,
-                        // Seat = 1,
-                        // Price = 7,
-                        // IsBooked = true,
-                        // BookedDate = ticket.BookedDate
-                    };
-
-                    service.BookTicket(ticket);
-
-                    return Results.Created($"/tickets/{ticket.Id}", new
-                    {
-                        Message = "The Ticket with ID {ticket.Id} was added successfully!",
-                        Ticket = ticket
-                    });
+                        return Results.Created($"/screenings/{screeningId}/tickets/{ticket.Id}", new
+                        {
+                            Message = "The Ticket with ID {ticket.Id} was booked successfully!",
+                            Ticket = ticket
+                        });
+                    }
+                    return Results.BadRequest("The Screening could not be booked!");
                 });
             }
             catch (Exception ex)
@@ -79,34 +49,37 @@ namespace movies_app.EndPoints
 
         //[ProducesResponseType(StatusCodes.Status201Created)]
         //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //    private static async Task<IResult> BookTicket(int screeningId, Ticket ticket, ICinemaRepository service)
+        //private static async Task<IResult> BookTicket(TicketPost model, ICinemaRepository service)
+        //{
+        //    try
         //    {
-        //        try
+        //        return await Task.Run(() =>
         //        {
-        //            return await Task.Run(() =>
+        //            Ticket ticket = new Ticket()
         //            {
-        //                Ticket ticket = new Ticket()
-        //                {
-        //                    ScreeningId = screeningId,
-        //                    Seat = ticket.Seat,
-        //
-        //                };
+        //                // UserUID = model.UserUID,
+        //                // MovieId = model.MovieId,
+        //                ScreeningId = model.ScreeningId,
+        //                // Seat = 1,
+        //                // Price = 7,
+        //                // IsBooked = true,
+        //                // BookedDate = ticket.BookedDate
+        //            };
 
-        //                service.BookTicket(ticket);
+        //            service.BookTicket(ticket);
 
-        //                Payload<Ticket> payload = new Payload<Ticket>()
-        //                {
-        //                    data = ticket
-        //                };
-
-        //                return Results.Created($"/customers/{userId}/screenings/{screeningId}", payload);
+        //            return Results.Created($"/tickets/{ticket.Id}", new
+        //            {
+        //                Message = "The Ticket with ID {ticket.Id} was added successfully!",
+        //                Ticket = ticket
         //            });
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return Results.Problem(ex.Message);
-        //        }
+        //        });
         //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Results.Problem(ex.Message);
+        //    }
+        //}
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetUserTickets(ICinemaRepository service)
@@ -209,14 +182,6 @@ namespace movies_app.EndPoints
                 return await Task.Run(() =>
                 {
                     var ticket = service.GetTicket(id);
-
-                    //var screeningToDelete = service.GetAllScreenings().Where(s => s.MovieId == id).ToList();
-
-                    //screeningToDelete.ForEach(x =>
-                    //{
-                    //    service.DeleteMovie(x.Id);
-                    //});
-
                     if (service.DeleteTicket(id)) return Results.Ok($"The Ticket with ID {id} was deleted successfully!");
                     return Results.NotFound($"No Ticket with ID {id} was found!");
                 });

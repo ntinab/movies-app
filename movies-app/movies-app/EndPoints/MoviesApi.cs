@@ -1,6 +1,7 @@
 ﻿using movies_app.Repository;
 using Microsoft.AspNetCore.Mvc;
 using movies_app.Models.MovieModel;
+using Microsoft.EntityFrameworkCore;
 using movies_app.Models.ScreeningModel;
 
 namespace movies_app.EndPoints
@@ -26,21 +27,6 @@ namespace movies_app.EndPoints
                 {
                     if (service.AddMovie(movie))
                     {
-                        if (movie.screenings.Any())
-                        {
-                            foreach (var screening in movie.screenings)
-                            {
-                                Screening screening = new Screening()
-                                {
-                                    MovieId = movie.Id,
-                                    IsAvailable = true,
-                                    Date = screening.Date, // add a date 
-                                    AvailableTickets = 100,
-                                };
-
-                                service.AddScreening(screening);
-                            }
-                        }
                         return Results.Created($"/movies/{movie.Id}", new
                         {
                             Message = "The Movie with ID {movie.Id} was added successfully!",
@@ -55,6 +41,26 @@ namespace movies_app.EndPoints
                 return Results.Problem(ex.Message);
             }
         }
+
+        //[ProducesResponseType(StatusCodes.Status201Created)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //private static async Task <IResult> AddMovies([FromBody] List<Movie> movies)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        foreach (var movie in movies)
+        //        {
+        //            _context.Movies.Add(movie);
+        //        }
+        //        _context.SaveChanges();
+
+        //        return Results.Created("CreateMovies", movies);
+        //    }
+        //    else
+        //    {
+        //        return Results.BadRequest(ModelState);
+        //    }
+        //}
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetMovies(ICinemaRepository service)
@@ -126,14 +132,19 @@ namespace movies_app.EndPoints
                 {
                     var movie = service.GetMovie(id);
 
-                    var screeningToDelete = service.GetAllScreenings().Where(s => s.MovieId == id).ToList();
-
-                    screeningToDelete.ForEach(x =>
+                    if (movie != null)
                     {
-                        service.DeleteMovie(x.Id);
-                    });
+                        var screeningsToDelete = service.GetAllScreenings().Where(s => s.MovieId == id).ToList();
+                        foreach (var screening in screeningsToDelete)
+                        {
+                            service.DeleteScreening(screening.Id);
+                        }
 
-                    if (service.DeleteMovie(id)) return Results.Ok($"The Movie with ID {id} was deleted successfully!");
+                        if (service.DeleteMovie(id))
+                        {
+                            return Results.Ok($"The Movie with ID {id} and its associated screenings were deleted successfully!");
+                        }
+                    }
                     return Results.NotFound($"No Movie with ID {id} was found!");
                 });
             }

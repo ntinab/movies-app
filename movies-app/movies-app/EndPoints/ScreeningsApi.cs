@@ -27,7 +27,7 @@ namespace movies_app.EndPoints
                 {
                     if (service.AddScreening(screening))
                     {
-                        return Results.Ok(new
+                        return Results.Created($"/screenings/{screening.Id}", new
                         {
                             Message = "The Screening with ID {screening.Id} was added successfully!",
                             Screening = screening
@@ -110,17 +110,22 @@ namespace movies_app.EndPoints
             {
                 return await Task.Run(() =>
                 {
-                    var screening = service.GetScreening(id);
+                    var screening = service.GetScreening(screeningId);
 
-                    var screeningToDelete = service.GetAllScreenings().Where(s => s.MovieId == id).ToList();
-
-                    screeningToDelete.ForEach(x =>
+                    if (screening != null)
                     {
-                        service.DeleteMovie(x.Id);
-                    });
+                        var ticketsToDelete = service.GetAllTickets().Where(t => t.ScreeningId == screeningId).ToList();
+                        foreach (var ticket in ticketsToDelete)
+                        {
+                            service.DeleteTicket(ticket.Id);
+                        }
 
-                    if (service.DeleteScreening(screeningId)) return Results.Ok($"The Screening with ID {id} was deleted successfully!");
-                    return Results.NotFound($"No Screening with ID {id} was found!");
+                        if (service.DeleteScreening(screeningId))
+                        {
+                            return Results.Ok($"The Screening with ID {screeningId} and its associated tickets were deleted successfully!");
+                        }
+                    }
+                    return Results.NotFound($"No Screening with ID {screeningId} was found!");
                 });
             }
             catch (Exception ex)

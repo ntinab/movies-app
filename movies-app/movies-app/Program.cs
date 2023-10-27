@@ -5,6 +5,7 @@ using movies_app.DataContext;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,16 +43,15 @@ app.UseAuthorization();
 app.UseCors(x => x
    .AllowAnyMethod()
    .AllowAnyHeader()
-   .SetIsOriginAllowed(origin => true) 
-   .AllowCredentials()
- ); 
+   .SetIsOriginAllowed(origin => true)
+   .AllowCredentials());
 
 app.MapControllers();
 
 app.ConfigureMoviesApi();
 app.ConfigureTicketsApi();
 app.ConfigureScreeningsApi();
-
+ 
 app.Initialize();
 
 app.Run();

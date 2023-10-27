@@ -7,8 +7,8 @@ namespace movies_app.Models.MovieModel
         public int Id { get; set; }
         public string Title { get; set; }
         public int Runtime { get; set; }
-        public IEnumerable<string> Genres { get; set; }
-        // public string[] Genres { get; set; }
+        // public IEnumerable<string> Genres { get; set; }
+        public string[] Genres { get; set; }
 
         public string Overview { get; set; }
         public DateTime ReleaseDate { get; set; }
