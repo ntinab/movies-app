@@ -3,14 +3,26 @@ using Microsoft.AspNetCore.Mvc;
 using movies_app.Models.MovieModel;
 using Microsoft.EntityFrameworkCore;
 using movies_app.Models.ScreeningModel;
+using movies_app.DataContext;
+using movies_app.Data;
+using Microsoft.AspNetCore.Builder;
+using Newtonsoft.Json;
+
 
 namespace movies_app.EndPoints
 {
-    public static class MoviesApi
+    public class MoviesApi
     {
-        public static void ConfigureMoviesApi(this WebApplication app)
+        private readonly DataInitializer _dataInitializer;
+
+        public MoviesApi(DataInitializer dataInitializer)
         {
-            app.MapPost("/movies", AddMovie);
+            _dataInitializer = dataInitializer;
+        }
+
+        public void ConfigureMoviesApi(WebApplication app)
+        {
+            app.MapPost("/movies", UploadMovies);
             app.MapGet("/movies", GetMovies);
             app.MapGet("/movies/{id}", GetMovie);
             app.MapPut("/movies/{id}", UpdateMovie);
@@ -19,7 +31,7 @@ namespace movies_app.EndPoints
 
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> AddMovie(Movie movie, ICinemaRepository service)
+        private async Task<IResult> AddMovie(Movie movie, ICinemaRepository service)
         {
             try
             {
@@ -27,9 +39,9 @@ namespace movies_app.EndPoints
                 {
                     if (service.AddMovie(movie))
                     {
-                        return Results.Created($"/movies/{movie.Id}", new
+                        return Results.Created($"/movies/{movie.id}", new
                         {
-                            Message = "The Movie with ID {movie.Id} was added successfully!",
+                            Message = "The Movie with ID {movie.id} was added successfully!",
                             Movie = movie
                         });
                     }
@@ -44,7 +56,7 @@ namespace movies_app.EndPoints
 
         //[ProducesResponseType(StatusCodes.Status201Created)]
         //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //private static async Task <IResult> AddMovies([FromBody] List<Movie> movies)
+        //private static async Task <IResult> AddMovies([FromBody] List<Movie> movies, ICinemaRepositoryService)
         //{
         //    if (ModelState.IsValid)
         //    {
@@ -62,8 +74,32 @@ namespace movies_app.EndPoints
         //    }
         //}
 
+        // private async Task<IResult> UploadMovies([FromBody]List<Movie> movies, ICinemaRepository service)
+        private async Task<IResult> UploadMovies([FromBody] string requestBody, ICinemaRepository service)
+
+        {
+            using (var db = new CinemaContext())
+            {
+
+                List<Movie> movies = JsonConvert.DeserializeObject<List<Movie>>(requestBody);
+
+                foreach (var movie in movies)
+                {
+                    db.Movies.Add(movie);
+                }
+
+                await db.SaveChangesAsync();
+            }
+
+            return Results.Ok("Movies uploaded successfully");
+ 
+            //_dataInitializer.Initialize(movies);
+
+            //return Results.Ok("Movies uploaded successfully.");
+        }
+
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> GetMovies(ICinemaRepository service)
+        private async Task<IResult> GetMovies(ICinemaRepository service)
         {
             try
             {
@@ -80,7 +116,7 @@ namespace movies_app.EndPoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetMovie(int id, ICinemaRepository service)
+        private async Task<IResult> GetMovie(int id, ICinemaRepository service)
         {
             try
             {
@@ -99,7 +135,7 @@ namespace movies_app.EndPoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> UpdateMovie(Movie movie, ICinemaRepository service)
+        private async Task<IResult> UpdateMovie(Movie movie, ICinemaRepository service)
         {
             try
             {
@@ -109,11 +145,11 @@ namespace movies_app.EndPoints
                     {
                         return Results.Ok(new
                         {
-                            Message = "The Movie with ID {movie.Id} was updated successfully!",
+                            Message = "The Movie with ID {movie.id} was updated successfully!",
                             Movie = movie
                         });
                     }
-                    return Results.NotFound($"No Movie with ID {movie.Id} was found!");
+                    return Results.NotFound($"No Movie with ID {movie.id} was found!");
                 });
             }
             catch (Exception ex)
@@ -124,7 +160,7 @@ namespace movies_app.EndPoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> DeleteMovie(int id, ICinemaRepository service)
+        private async Task<IResult> DeleteMovie(int id, ICinemaRepository service)
         {
             try
             {

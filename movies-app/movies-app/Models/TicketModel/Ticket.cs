@@ -11,13 +11,13 @@ namespace movies_app.Models.TicketModel
         public bool IsBooked { get; set; }
         public DateTime BookedDate { get; set; }
 
-        [JsonIgnore]
+        // [JsonIgnore]
         // [ForeignKey("User")]
-        public string UserUID { get; set; }
+        // public string UserUID { get; set; }
 
-        [JsonIgnore]
+        // [JsonIgnore]
         //[ForeignKey("Movie")]
-        public int MovieId { get; set; }
+        // public int MovieId { get; set; }
 
         [JsonIgnore]
         [ForeignKey("Screening")]

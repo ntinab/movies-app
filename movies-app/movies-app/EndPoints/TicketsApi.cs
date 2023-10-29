@@ -14,7 +14,7 @@ namespace movies_app.EndPoints
         public static void ConfigureTicketsApi(this WebApplication app)
         {
             app.MapGet("/tickets", GetUserTickets);
-            app.MapGet("/movies/{id}/tickets", GetMovieTickets);
+            //app.MapGet("/movies/{id}/tickets", GetMovieTickets);
             app.MapPost("screenings/{screeningId}/tickets", BookTicket);
             app.MapGet("screenings/{screeningId}/tickets", GetScreeningTickets);
             app.MapGet("screenings/{screeningId}/tickets/{ticketId}", GetTicket);
@@ -98,20 +98,20 @@ namespace movies_app.EndPoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> GetMovieTickets(int id, ICinemaRepository service)
-        {
-            try
-            {
-                return await Task.Run(() =>
-                {
-                    return Results.Ok(service.GetAllTickets().Where(t => t.MovieId == id).ToList());
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(ex.Message);
-            }
-        }
+        //private static async Task<IResult> GetMovieTickets(int id, ICinemaRepository service)
+        //{
+        //    try
+        //    {
+        //        return await Task.Run(() =>
+        //        {
+        //            return Results.Ok(service.GetAllTickets().Where(t => t.MovieId == id).ToList());
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Results.Problem(ex.Message);
+        //    }
+        //}
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetScreeningTickets(int screeningId, ICinemaRepository service)

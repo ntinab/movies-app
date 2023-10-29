@@ -1,32 +1,39 @@
-﻿using movies_app.DataContext;
+﻿using Newtonsoft.Json;
+using movies_app.DataContext;
 using movies_app.Models.UserModel;
 using movies_app.Models.MovieModel;
 using movies_app.Models.TicketModel;
 using Microsoft.EntityFrameworkCore;
 using movies_app.Models.ScreeningModel;
-using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace movies_app.Data
 {
-    public static class DataInitializer
+    public class DataInitializer
     {
-        public static void Initialize(this WebApplication app)
+        public void Initialize(List<Movie> movies)
         {
+            // List<Movie> movies = JsonConvert.DeserializeObject<List<Movie>>(movies);
+
             using (var db = new CinemaContext())
             {
-                var movies = GetMoviesFromFrontend();
+                var screenings = new List<Screening>();
+                var tickets = new List<Ticket>();
+
+                DateTime initialDate = DateTime.Today.AddHours(21);
 
                 foreach (var movie in movies)
                 {
                     db.Movies.Add(movie);
-                    db.SaveChanges();
 
                     for (int i = 1; i <= 7; i++)
                     {
                         var screening = new Screening
                         {
-                            MovieId = movie.Id,
-                            // Set other screening details, e.g., Showtime
+                            MovieId = movie.id,
+                            Date = initialDate,
+                            IsAvailable = true,
+                            AvailableTickets = 100
                         };
                         db.Screenings.Add(screening);
 
@@ -35,35 +42,17 @@ namespace movies_app.Data
                             var ticket = new Ticket
                             {
                                 ScreeningId = screening.Id,
-                                // Set other ticket details
+                                Seat = j,
+                                Price = 11,
+                                IsBooked = false,
+                                // BookedDate = screening.Date
+                                BookedDate = initialDate
                             };
                             db.Tickets.Add(ticket);
                         }
                     }
                 }
                 db.SaveChanges();
-            }
-        }
-
-        private static List<Movie> GetMoviesFromFrontend()
-        {
-            using (var client = new HttpClient())
-            {
-                var frontendApiUrl = "http://localhost:3000";
-
-                var response = client.GetAsync(frontendApiUrl).Result;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var moviesJson = response.Content.ReadAsStringAsync().Result;
-                    var movies = JsonConvert.DeserializeObject<List<Movie>>(moviesJson);
-
-                    return movies;
-                }
-                else
-                {
-                    throw new Exception("Failed to fetch movies from the frontend API.");
-                }
             }
         }
     }

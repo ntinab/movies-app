@@ -3,9 +3,9 @@ using movies_app.EndPoints;
 using movies_app.Repository;
 using movies_app.DataContext;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +29,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+var moviesApi = new MoviesApi(new DataInitializer());
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -48,10 +50,11 @@ app.UseCors(x => x
 
 app.MapControllers();
 
-app.ConfigureMoviesApi();
+// app.ConfigureMoviesApi();
+moviesApi.ConfigureMoviesApi(app); 
 app.ConfigureTicketsApi();
 app.ConfigureScreeningsApi();
  
-app.Initialize();
+// app.Initialize();
 
 app.Run();

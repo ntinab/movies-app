@@ -27,7 +27,7 @@ namespace movies_app.Repository
         {
             using (var db = new CinemaContext())
             {
-                Movie result = db.Movies.FirstOrDefault(m => m.Id == id);
+                Movie result = db.Movies.FirstOrDefault(m => m.id == id);
                 return result;
             }
         }
@@ -72,7 +72,7 @@ namespace movies_app.Repository
             {
                 using (var db = new CinemaContext())
                 {
-                    var movieToDelete = db.Movies.FirstOrDefault(m => m.Id == id);
+                    var movieToDelete = db.Movies.FirstOrDefault(m => m.id == id);
                     if (movieToDelete != null)
                     {
                         db.Movies.Remove(movieToDelete);
