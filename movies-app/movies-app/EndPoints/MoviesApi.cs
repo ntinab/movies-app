@@ -74,14 +74,14 @@ namespace movies_app.EndPoints
         //    }
         //}
 
-        // private async Task<IResult> UploadMovies([FromBody]List<Movie> movies, ICinemaRepository service)
-        private async Task<IResult> UploadMovies([FromBody] string requestBody, ICinemaRepository service)
+        private async Task<IResult> UploadMovies([FromBody]List<Movie> movies, ICinemaRepository service)
+        // private async Task<IResult> UploadMovies([FromBody] string requestBody, ICinemaRepository service)
 
         {
             using (var db = new CinemaContext())
             {
 
-                List<Movie> movies = JsonConvert.DeserializeObject<List<Movie>>(requestBody);
+                // List<Movie> movies = JsonConvert.DeserializeObject<List<Movie>>(requestBody);
 
                 foreach (var movie in movies)
                 {
