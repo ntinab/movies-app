@@ -1,14 +1,12 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { setGenres } from '../redux/reducer'
 import { useRoutes } from 'react-router-dom'
+import { setGenres } from '../redux/reducer'
 import React, { useEffect } from 'react'
 import { MoviesModel } from '../data'
-import Tickets from '../views/Tickets'
-import MoviesList from '../views'
 import { message } from 'antd'
+import Movies from '../views'
 
 const Router = () => {
-
   const dispatch = useDispatch();
 
   const { bearerAccessToken, genres } = useSelector((state) => state);
@@ -25,40 +23,36 @@ const Router = () => {
   let element = useRoutes([
     {
       path: "/",
-      element: <MoviesList />,
+      element: <Movies />,
     },
     {
       path: "/upcoming",
-      element: <MoviesList />,
+      element: <Movies />,
     },
     {
       path: "/trending",
-      element: <MoviesList />,
+      element: <Movies />,
     },
     {
       path: "/popular",
-      element: <MoviesList />,
+      element: <Movies />,
     },
     {
       path: "/toprated",
-      element: <MoviesList />,
+      element: <Movies />,
     },
     {
       path: "/nowplaying",
-      element: <MoviesList />,
+      element: <Movies />,
     },
     {
       path: "/favourites",
-      element: <MoviesList />,
+      element: <Movies />,
     },
     {
       path: "/watchlist",
-      element: <MoviesList />,
-    },
-    {
-      path: "/tickets",
-      element: <Tickets />,
-    },
+      element: <Movies />,
+    }
   ]);
 
   return element;

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  moviesListRDX: [],
+  moviesRDX: [],
   genres: [],
   page: 1,
   totalItems: [],
@@ -17,8 +17,8 @@ export const stateSlice = createSlice({
   name: "myApp",
   initialState,
   reducers: {
-    setMoviesListRDX: (state, { payload }) => {
-      state.moviesListRDX = payload;
+    setMoviesRDX: (state, { payload }) => {
+      state.moviesRDX = payload;
     },
     setGenres: (state, { payload }) => {
       state.genres = payload;
@@ -51,5 +51,5 @@ export const stateSlice = createSlice({
 });
 
 
-export const { setMoviesListRDX, setBearerAccessToken, setGenres, setPage, setTotalItems, setFavourites, setWatchlist, setSearchInput, setFilters, setUserRDX } = stateSlice.actions;
+export const { setMoviesRDX, setBearerAccessToken, setGenres, setPage, setTotalItems, setFavourites, setWatchlist, setSearchInput, setFilters, setUserRDX } = stateSlice.actions;
 export default stateSlice.reducer;

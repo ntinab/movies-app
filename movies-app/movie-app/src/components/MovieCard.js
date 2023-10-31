@@ -1,21 +1,24 @@
 import { BookOutlined, CloseOutlined, EyeOutlined, HeartFilled, HeartOutlined, PlusOutlined } from '@ant-design/icons'
+import { Card, Modal, Tag, message, Button, Input, Select } from 'antd'
 import { setFavourites, setWatchlist } from '../redux/reducer'
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Card, Modal, Tag, message } from 'antd'
 import { toast } from 'react-toastify'
 import { MoviesModel } from '../data'
 import moment from 'moment'
+import axios from 'axios'
 
 const { Meta } = Card;
 
 const MovieCard = ({ movie }) => {
-
+  
   const dispatch = useDispatch();
 
   const { bearerAccessToken, userRDX, favourites, watchlist, genres } = useSelector((state) => state);
 
   const iframeRef = useRef();
+
+  const [email, setEmail] = useState('');
 
   const [movieGenres, setMovieGenres] = useState([]);
 
@@ -28,6 +31,21 @@ const MovieCard = ({ movie }) => {
   const [selectedMovieID, setSelectedMovieID] = useState(0);
 
   const [selectedMovieKEY, setSelectedMovieKEY] = useState(0);
+
+  const [availableScreenings, setAvailableScreenings] = useState([]);
+
+  const [selectedScreeningId, setSelectedScreeningId] = useState(null);
+
+  // useEffect ?
+  const fetchAvailableScreenings = (movieId) => {
+    MoviesModel.getMovieScreenings(movieId)
+      .then((res) => {
+        setAvailableScreenings(res.data);
+      })
+      .catch((err) => {
+        console.error('Error fetching available screenings:', err);
+      });
+  };
 
   useEffect(() => {
     setMovieGenres(genres.filter((gen) => movie.genre_ids.includes(gen.id)));
@@ -56,6 +74,18 @@ const MovieCard = ({ movie }) => {
         .catch((err) => message.error(err.message));
   }, [movieModal, selectedMovieID]);
 
+  if (movie.genres && movie.genres.length > 0) {
+    var firstTwoGenres = movie.genres.slice(0, 2).map((genre) => genre.name);
+  } else {
+    firstTwoGenres = movie.genre_ids.slice(0, 2).map((genreId) => genres.find((genre) => genre.id === genreId)?.name);
+}
+
+function formatDate(dateString) {
+  const options = { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' };
+  const formattedDate = new Date(dateString).toLocaleString('en-US', options);
+  return formattedDate;
+}
+
   return (
     <>
       <div className="movie-card-container">
@@ -65,8 +95,9 @@ const MovieCard = ({ movie }) => {
             backgroundColor: "black",
             color: "white",
             borderStyle: "none",
-            display: "inline-flex",
-            flexWrap: "wrap",
+            // display: "inline-flex",
+            display: "inline-block",
+            // flexWrap: "wrap",
           }}
           cover={
             <div style={{ position: "relative", display: "inline-block" }}>
@@ -105,8 +136,8 @@ const MovieCard = ({ movie }) => {
           }
           actions={[
             favourites.some((f) => f.id === movie.id) ? (
-              <HeartFilled
-                style={{ color: "black" }}
+              <HeartFilled 
+              style={{ color: "black" }}
                 onClick={() => {
                   if (!userRDX) {
                     toast.info(
@@ -123,7 +154,7 @@ const MovieCard = ({ movie }) => {
                 }}
               />
             ) : (
-              <HeartOutlined
+              <HeartOutlined 
                 key="favourites-item"
                 onClick={() => {
                   if (!userRDX) {
@@ -135,7 +166,7 @@ const MovieCard = ({ movie }) => {
               />
             ),
             watchlist.some((w) => w.id === movie.id) ? (
-              <CloseOutlined
+              <CloseOutlined 
                 key="watchlist-item"
                 onClick={() => {
                   if (!userRDX) {
@@ -153,7 +184,7 @@ const MovieCard = ({ movie }) => {
                 }}
               />
             ) : (
-              <PlusOutlined
+              <PlusOutlined 
                 onClick={() => {
                   if (!userRDX) {
                     toast.info(
@@ -163,24 +194,26 @@ const MovieCard = ({ movie }) => {
                 }}
               />
             ),
-            <BookOutlined
+            <BookOutlined 
               onClick={() => {
                 setTicketModal(true);
                 setSelectedMovieID(movie.id);
+                fetchAvailableScreenings(movie.id);
               }}
             />,
-            <EyeOutlined
+            <EyeOutlined 
               onClick={() => {
                 setSelectedMovieID(movie.id);
                 setMovieModal(true);
               }}
-            />,
+            />
           ]}
-        >
+          >
           <Meta
-            style={{ cursor: "default" }}
-            title=<h3>{movie.title}</h3>
+            style={{ cursor: "default", backgroundColor: 'black', color: 'white', width: '220px' }}
+            title={<div className='card-title'><b>{movie.title}</b></div>}
             description={
+              <div className="card-description" style={{backgroundColor: 'black', color: 'white'}}>
               <space>
                 <p>
                   <b>Release Date: </b>
@@ -190,30 +223,20 @@ const MovieCard = ({ movie }) => {
                   <b>Genres: </b>
                   <br />
                   <span style={{ display: "inline-flex", flexWrap: "wrap" }}>
-                  {/* {movieGenres.map((genre, index) => (
+                  {firstTwoGenres.map((genre, index) => (
                     <Tag key={index} style={{ backgroundColor: 'lightgray', marginRight:'5px', color: 'black', fontSize: '8px', marginTop: '5px' }}>
                       {genre}
-                    </Tag>
-                  ))} */}
-                  {movieGenres.map((mg) => (
-                    <Tag
-                        style={{
-                          marginRight: 5,
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                        }}
-                    >
-                      {mg.name}
                     </Tag>
                   ))}
                   </span>
                 </p>
               </space>
+              </div>
             }
           />
         </Card>
       </div>
+
       <Modal
         footer={null}
         width={1000}
@@ -229,18 +252,14 @@ const MovieCard = ({ movie }) => {
               <h1>{movie.title}</h1>
             </div>
             <div style={{ position: "relative", display: "inline-block" }}>
-              {/* {trailers.length > 0 && ( */}
               <iframe
                 ref={iframeRef}
                 title={selectedMovieID.title}
                 width="560"
                 height="315"
                 src={`https://www.youtube.com/embed/${selectedMovieKEY}`}
-                // src={`https://www.youtube.com/embed/${trailers[0].key}`}
-                // title={`Trailer ${trailers[0].name}`}
                 allowFullScreen
               ></iframe>
-              {/* )} */}
             </div>
             <p>{movie.overview}</p>
             <p>
@@ -255,20 +274,6 @@ const MovieCard = ({ movie }) => {
               <p>
                 <b>Genres: </b>
                 <span style={{ display: "inline-flex", flexWrap: "wrap" }}>
-                  {/* {movieGenres.map((genre) => (
-                    <Tag
-                      key={genre}
-                      style={{
-                        backgroundColor: "black",
-                        marginRight: "5px",
-                        color: "white",
-                        fontSize: "8px",
-                        marginTop: "5px",
-                      }}
-                    >
-                      {genre}
-                    </Tag>
-                  ))} */}
                   {movieGenres.map((mg) => (
                       <Tag
                         style={{
@@ -287,15 +292,84 @@ const MovieCard = ({ movie }) => {
           </div>
         )}
       </Modal>
+
       <Modal
         open={ticketModal}
         footer={null}
+        width={1000}
         onCancel={() => {
           setTicketModal(false);
         }}
       >
-        {/* add ticket modal  */}
-      </Modal>
+        {movie && (
+          <div className="movie-page-container">
+            <div className="movie-page-title">
+              <h1>{movie.title}</h1>
+            </div>
+            <div style={{ position: "relative", display: "inline-block" }}>    
+            <img src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
+                alt="Movie"
+                style={{ width: "560px", height: "315px" }}    
+            />        
+            </div>
+            <p>
+              <b>Runtime: </b>
+              {`${Math.floor(movieRuntime / 60)}h ${movieRuntime % 60}m`}
+            </p>
+            <p>
+              <b>Price:</b> 11$
+            </p>
+            <p>
+              <b>Available Screenings: </b>
+             <Select
+              placeholder="Select a screening"
+              style={{
+                height: '27px'
+              }}
+              value={selectedScreeningId} 
+              onChange={(value) => setSelectedScreeningId(value)} 
+              options={availableScreenings.map((screening) => ({
+                value: screening.id,
+                label: formatDate(screening.date),
+              }))}
+            />
+            </p>
+            <p>
+            <Input
+            placeholder="Type your E-mail Address here"
+            style={{
+              width: '355px',  
+              height: '27px',  
+            }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            >
+            </Input>
+            </p>
+            <p>
+            <Button type="text" style={{marginTop: '17px', backgroundColor: 'black', color: 'white', borderRadius: '0px', height: '31px'}} 
+           onClick={() => {
+            if (selectedScreeningId) {
+              axios.post(`https://localhost:7195/screenings/${selectedScreeningId}/tickets`, {
+                // email: email,
+              })
+              .then((res) => {
+                toast.success('Booked ticket successfully');
+              })
+              .catch((error) => {
+                toast.error('Error booking ticket: ' + error.message);
+              });
+            } else {
+              toast.info('Please select a screening to book a ticket.');
+            }
+          }}
+            >
+              Book Ticket 
+            </Button>
+            </p>
+          </div>
+        )}
+      </Modal>     
     </>
   );
 };

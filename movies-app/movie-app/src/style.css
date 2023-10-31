@@ -8,15 +8,13 @@
 }
 
 .movie-card-container {
-  padding: 75px;
-  /* padding: 25px; */
+  padding: 51px;
   text-align: center;
   display: block;  
-  height: 375px;
-  margin-left: 45px;
-  margin-top: 10px;
-  margin-bottom: 100px;
-  width: 155px;
+  height: 395px;
+  margin-top: 12px;
+  margin-bottom: 150px;
+  width: '100&';
   float: left;
 }
 
@@ -57,9 +55,9 @@
 
 .custom-search-input .ant-input {
   border: none;
-  font-size: 10px; 
-  height: 25px; 
-  margin-top: 10px;
+  font-size: 7px; 
+  height: 17px; 
+  margin-top: 0px;
   border-radius: 0;
 }
 
@@ -71,15 +69,10 @@ body {
   padding-bottom: 15px;
 }
 
-#error-page {
-  background: black;
-  color: white;
-  text-align: center;
-}
-
 h1, h2, h3, h5 {
   font-weight: bold;
   margin: 20px;
+  color: white;
 }
 
 p {
@@ -87,7 +80,6 @@ p {
 }
 
 button:hover {
-  /* background-color: rgba(191, 181, 195, 0.907);  */
   color: white;
 }
 
@@ -117,11 +109,6 @@ button:hover {
 .Header-link:hover {
   color: white;
 }
-/* 
-a:link, a:visited, a:active, a {
-  font-size: small;
-  color: white;
-} */
 
 .Footer {
   background:black;
@@ -184,4 +171,20 @@ a:link, a:visited, a:active, a {
   margin-right: 0;
   margin-bottom: 8px;
   margin-left: 8px;
+}
+
+#ul.ant-card-actions {
+  background-color: black !important;
+}
+
+.custom-icon-button {
+  background-color: black !important;
+}
+
+.card-title {
+  max-height: 2.5em; 
+  overflow: hidden;
+  line-height: 1;
+  margin: 0;
+  color: white;
 }

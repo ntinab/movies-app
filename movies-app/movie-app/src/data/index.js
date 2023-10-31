@@ -58,4 +58,10 @@ export const MoviesModel = {
     axios.get(`https://api.themoviedb.org/3/movie/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
+
+  getMovieScreenings: (id) =>
+    axios.get(`https://localhost:7195/movies/${id}/screenings`),
+
+  bookTicket: (screeningId) =>
+    axios.post(`https://localhost:7195/screenings/${screeningId}/tickets`, {screeningId})
 };
