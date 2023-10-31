@@ -30,9 +30,6 @@ namespace api_cinema_challenge.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AvailableTickets")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 

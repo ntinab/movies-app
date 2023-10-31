@@ -1,7 +1,6 @@
 ﻿using movies_app.Repository;
 using Microsoft.AspNetCore.Mvc;
 using movies_app.Models.UserModel;
-using movies_app.Models.MovieModel;
 using movies_app.Models.TicketModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -24,99 +23,55 @@ namespace movies_app.EndPoints
 
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> BookTicket(int screeningId, Ticket ticket, ICinemaRepository service)
+        private static async Task<IResult> BookTicket(int screeningId, ICinemaRepository service)
         {
             try
             {
                 var screening = service.GetScreening(screeningId);
-
-                if (screening != null && screening.AvailableTickets > 0)
-                {
+                var ticket = new Ticket();
+                ticket.ScreeningId = screeningId;
+                int countTickets = service.GetAllTickets().Where(t => t.ScreeningId == screeningId).ToList().Count;
+                ticket.Seat = countTickets + 1;
+                ticket.Price = 11;
                 ticket.IsBooked = true;
+                ticket.BookedDate = screening.Date;
+                service.BookTicket(ticket);
 
-                    if (screening.AvailableTickets > 0)
-                    {
-                        screening.AvailableTickets--;
+                return Results.Created($"/screenings/{screeningId}/tickets/{ticket.Id}", new
+                {
+                    Message = "The Ticket was booked successfully!",
+                    Ticket = ticket
+                });
 
-                        if (service.UpdateScreening(screening))
-                    {
-                        if (service.BookTicket(ticket))
-                            {
-                                return Results.Created($"/screenings/{screeningId}/tickets/{ticket.Id}", new
-                                {
-                                    Message ="The Ticket was booked successfully!",
-                                    Ticket = ticket
-                                });
-                            }
-                        }
-                    }
-                }
-                return Results.BadRequest("The Ticket could not be booked!");
+            //    if (screening != null && screening.AvailableTickets > 0)
+            //    {
+            //    ticket.IsBooked = true;
+
+            //        if (screening.AvailableTickets > 0)
+            //        {
+            //            screening.AvailableTickets--;
+
+            //            if (service.UpdateScreening(screening))
+            //        {
+            //            if (service.BookTicket(ticket))
+            //                {
+            //                    return Results.Created($"/screenings/{screeningId}/tickets/{ticket.Id}", new
+            //                    {
+            //                        Message ="The Ticket was booked successfully!",
+            //                        Ticket = ticket
+            //                    });
+            //                }
+            //            }
+            //        }
+            //    }
+            //    return Results.BadRequest("The Ticket could not be booked!");
+
             }
             catch (Exception ex)
             {
                 return Results.Problem(ex.Message);
             }
         }
-
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //private static async Task<IResult> BookTicket(int screeningId, Ticket ticket, ICinemaRepository service)
-        //{
-        //    try
-        //    {
-        //        return await Task.Run(() =>
-        //        {
-        //            if (service.BookTicket(ticket))
-        //            {
-        //                return Results.Created($"/screenings/{screeningId}/tickets/{ticket.Id}", new
-        //                {
-        //                    Message = "The Ticket with ID {ticket.Id} was booked successfully!",
-        //                    Ticket = ticket
-        //                });
-        //            }
-        //            return Results.BadRequest("The Screening could not be booked!");
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Results.Problem(ex.Message);
-        //    }
-        //}
-
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //private static async Task<IResult> BookTicket(TicketPost model, ICinemaRepository service)
-        //{
-        //    try
-        //    {
-        //        return await Task.Run(() =>
-        //        {
-        //            Ticket ticket = new Ticket()
-        //            {
-        //                // UserUID = model.UserUID,
-        //                // MovieId = model.MovieId,
-        //                ScreeningId = model.ScreeningId,
-        //                // Seat = 1,
-        //                // Price = 7,
-        //                // IsBooked = true,
-        //                // BookedDate = ticket.BookedDate
-        //            };
-
-        //            service.BookTicket(ticket);
-
-        //            return Results.Created($"/tickets/{ticket.Id}", new
-        //            {
-        //                Message = "The Ticket with ID {ticket.Id} was added successfully!",
-        //                Ticket = ticket
-        //            });
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Results.Problem(ex.Message);
-        //    }
-        //}
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetUserTickets(ICinemaRepository service)
@@ -175,7 +130,7 @@ namespace movies_app.EndPoints
                 return await Task.Run(() =>
                 {
                     var ticket = service.GetTicket(id);
-                    if (ticket == null) return Results.NotFound($"No Ticket with this ID was found!");
+                    if (ticket == null) return Results.NotFound("No Ticket with this ID was found!");
                     return Results.Ok(ticket);
                 });
             }
@@ -201,7 +156,7 @@ namespace movies_app.EndPoints
                             Ticket = ticket
                         });
                     }
-                    return Results.NotFound($"No Ticket with this ID was found!");
+                    return Results.NotFound("No Ticket with this ID was found!");
                 });
             }
             catch (Exception ex)
@@ -219,8 +174,8 @@ namespace movies_app.EndPoints
                 return await Task.Run(() =>
                 {
                     var ticket = service.GetTicket(id);
-                    if (service.DeleteTicket(id)) return Results.Ok($"The Ticket was deleted successfully!");
-                    return Results.NotFound($"No Ticket with this ID was found!");
+                    if (service.DeleteTicket(id)) return Results.Ok("The Ticket was deleted successfully!");
+                    return Results.NotFound("No Ticket with this ID was found!");
                 });
             }
             catch (Exception ex)

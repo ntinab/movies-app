@@ -9,7 +9,7 @@ namespace movies_app.Models.ScreeningModel
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public bool IsAvailable { get; set; }
-        public int AvailableTickets { get; set; }
+        // public int AvailableTickets { get; set; }
         public IEnumerable<Ticket> Tickets { get; set; }
 
         [JsonIgnore]

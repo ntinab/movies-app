@@ -1,2 +1,0 @@
-- screenings not being populated as supposed to : available tickets & id !
-- book ticket !

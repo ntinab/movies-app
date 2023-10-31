@@ -20,7 +20,6 @@ namespace api_cinema_challenge.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
-                    AvailableTickets = table.Column<int>(type: "integer", nullable: false),
                     MovieId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

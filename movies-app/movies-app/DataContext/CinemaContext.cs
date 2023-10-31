@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using movies_app.Models.UserModel;
-using movies_app.Models.MovieModel;
 using movies_app.Models.TicketModel;
 using movies_app.Models.ScreeningModel;
 
@@ -23,7 +22,6 @@ namespace movies_app.DataContext
 
         public DbSet<Screening> Screenings { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
-        // public DbSet<Movie> Movies { get; set; }
         // public DbSet<User> Users { get; set; }
     }
 }
