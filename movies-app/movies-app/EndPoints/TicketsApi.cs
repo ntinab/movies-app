@@ -28,24 +28,61 @@ namespace movies_app.EndPoints
         {
             try
             {
-                return await Task.Run(() =>
+                var screening = service.GetScreening(screeningId);
+
+                if (screening != null && screening.AvailableTickets > 0)
                 {
-                    if (service.BookTicket(ticket))
+                ticket.IsBooked = true;
+
+                    if (screening.AvailableTickets > 0)
                     {
-                        return Results.Created($"/screenings/{screeningId}/tickets/{ticket.Id}", new
-                        {
-                            Message = "The Ticket with ID {ticket.Id} was booked successfully!",
-                            Ticket = ticket
-                        });
+                        screening.AvailableTickets--;
+
+                        if (service.UpdateScreening(screening))
+                    {
+                        if (service.BookTicket(ticket))
+                            {
+                                return Results.Created($"/screenings/{screeningId}/tickets/{ticket.Id}", new
+                                {
+                                    Message ="The Ticket was booked successfully!",
+                                    Ticket = ticket
+                                });
+                            }
+                        }
                     }
-                    return Results.BadRequest("The Screening could not be booked!");
-                });
+                }
+                return Results.BadRequest("The Ticket could not be booked!");
             }
             catch (Exception ex)
             {
                 return Results.Problem(ex.Message);
             }
         }
+
+        //[ProducesResponseType(StatusCodes.Status201Created)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //private static async Task<IResult> BookTicket(int screeningId, Ticket ticket, ICinemaRepository service)
+        //{
+        //    try
+        //    {
+        //        return await Task.Run(() =>
+        //        {
+        //            if (service.BookTicket(ticket))
+        //            {
+        //                return Results.Created($"/screenings/{screeningId}/tickets/{ticket.Id}", new
+        //                {
+        //                    Message = "The Ticket with ID {ticket.Id} was booked successfully!",
+        //                    Ticket = ticket
+        //                });
+        //            }
+        //            return Results.BadRequest("The Screening could not be booked!");
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Results.Problem(ex.Message);
+        //    }
+        //}
 
         //[ProducesResponseType(StatusCodes.Status201Created)]
         //[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -138,7 +175,7 @@ namespace movies_app.EndPoints
                 return await Task.Run(() =>
                 {
                     var ticket = service.GetTicket(id);
-                    if (ticket == null) return Results.NotFound($"No Ticket with ID {id} was found!");
+                    if (ticket == null) return Results.NotFound($"No Ticket with this ID was found!");
                     return Results.Ok(ticket);
                 });
             }
@@ -160,11 +197,11 @@ namespace movies_app.EndPoints
                     {
                         return Results.Ok(new
                         {
-                            Message = "The Ticket with ID {ticket.Id} was updated successfully!",
+                            Message = "The Ticket was updated successfully!",
                             Ticket = ticket
                         });
                     }
-                    return Results.NotFound($"No Ticket with ID {ticket.Id} was found!");
+                    return Results.NotFound($"No Ticket with this ID was found!");
                 });
             }
             catch (Exception ex)
@@ -182,8 +219,8 @@ namespace movies_app.EndPoints
                 return await Task.Run(() =>
                 {
                     var ticket = service.GetTicket(id);
-                    if (service.DeleteTicket(id)) return Results.Ok($"The Ticket with ID {id} was deleted successfully!");
-                    return Results.NotFound($"No Ticket with ID {id} was found!");
+                    if (service.DeleteTicket(id)) return Results.Ok($"The Ticket was deleted successfully!");
+                    return Results.NotFound($"No Ticket with this ID was found!");
                 });
             }
             catch (Exception ex)

@@ -12,8 +12,8 @@ using movies_app.DataContext;
 namespace api_cinema_challenge.Migrations
 {
     [DbContext(typeof(CinemaContext))]
-    [Migration("20231029223427_firstMigration")]
-    partial class firstMigration
+    [Migration("20231031020907_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,65 +24,6 @@ namespace api_cinema_challenge.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("movies_app.Models.MovieModel.Movie", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Adult")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("BackdropPath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int[]>("GenreIds")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
-
-                    b.Property<string>("OriginalLanguage")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OriginalTitle")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Overview")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Popularity")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("PosterPath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ReleaseDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Video")
-                        .HasColumnType("boolean");
-
-                    b.Property<double>("VoteAverage")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("VoteCount")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Movies");
-                });
 
             modelBuilder.Entity("movies_app.Models.ScreeningModel.Screening", b =>
                 {
@@ -105,8 +46,6 @@ namespace api_cinema_challenge.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
 
                     b.ToTable("Screenings");
                 });
@@ -141,29 +80,6 @@ namespace api_cinema_challenge.Migrations
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("movies_app.Models.UserModel.User", b =>
-                {
-                    b.Property<string>("UserUID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Identifier")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("UserUID");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("movies_app.Models.ScreeningModel.Screening", b =>
-                {
-                    b.HasOne("movies_app.Models.MovieModel.Movie", null)
-                        .WithMany("Screenings")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("movies_app.Models.TicketModel.Ticket", b =>
                 {
                     b.HasOne("movies_app.Models.ScreeningModel.Screening", null)
@@ -171,11 +87,6 @@ namespace api_cinema_challenge.Migrations
                         .HasForeignKey("ScreeningId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("movies_app.Models.MovieModel.Movie", b =>
-                {
-                    b.Navigation("Screenings");
                 });
 
             modelBuilder.Entity("movies_app.Models.ScreeningModel.Screening", b =>

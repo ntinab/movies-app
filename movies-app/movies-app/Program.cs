@@ -1,4 +1,4 @@
-using movies_app.Data;
+// using movies_app.Data;
 using movies_app.EndPoints;
 using movies_app.Repository;
 using movies_app.DataContext;
@@ -29,7 +29,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-var moviesApi = new MoviesApi(new DataInitializer());
+// var moviesApi = new MoviesApi(new DataInitializer());
 
 var app = builder.Build();
 
@@ -51,7 +51,7 @@ app.UseCors(x => x
 app.MapControllers();
 
 // app.ConfigureMoviesApi();
-moviesApi.ConfigureMoviesApi(app); 
+// moviesApi.ConfigureMoviesApi(app); 
 app.ConfigureTicketsApi();
 app.ConfigureScreeningsApi();
  

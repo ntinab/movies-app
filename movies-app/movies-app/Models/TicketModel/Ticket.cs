@@ -20,7 +20,7 @@ namespace movies_app.Models.TicketModel
         // public int MovieId { get; set; }
 
         [JsonIgnore]
-        [ForeignKey("Screening")]
+        //[ForeignKey("Screening")]
         public int ScreeningId { get; set; }      
     }
 }

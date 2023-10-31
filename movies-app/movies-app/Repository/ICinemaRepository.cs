@@ -6,11 +6,11 @@ namespace movies_app.Repository
 {
     public interface ICinemaRepository
     {
-        IEnumerable<Movie> GetAllMovies();
-        Movie GetMovie(int id);
-        bool AddMovie(Movie movie);
-        bool UpdateMovie(Movie movie);
-        bool DeleteMovie(int id);
+        //IEnumerable<Movie> GetAllMovies();
+        //Movie GetMovie(int id);
+        //bool AddMovie(Movie movie);
+        //bool UpdateMovie(Movie movie);
+        //bool DeleteMovie(int id);
 
 
         IEnumerable<Screening> GetAllScreenings();
@@ -18,6 +18,7 @@ namespace movies_app.Repository
         bool AddScreening(Screening screening);
         bool UpdateScreening(Screening screening);
         bool DeleteScreening(int id);
+        bool AddAvailableTickets(int screeningId, int count);
 
 
         IEnumerable<Ticket> GetAllTickets();

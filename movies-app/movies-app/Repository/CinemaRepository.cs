@@ -8,88 +8,88 @@ namespace movies_app.Repository
 {
     public class CinemaRepository : ICinemaRepository
     {
-        public IEnumerable<Movie> GetAllMovies()
-        {
-            try
-            {
-                using (var db = new CinemaContext())
-                {
-                    return db.Movies.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
+        //public IEnumerable<Movie> GetAllMovies()
+        //{
+        //    try
+        //    {
+        //        using (var db = new CinemaContext())
+        //        {
+        //            return db.Movies.ToList();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+        //}
 
-        public Movie GetMovie(int id)
-        {
-            using (var db = new CinemaContext())
-            {
-                Movie result = db.Movies.FirstOrDefault(m => m.id == id);
-                return result;
-            }
-        }
+        //public Movie GetMovie(int id)
+        //{
+        //    using (var db = new CinemaContext())
+        //    {
+        //        Movie result = db.Movies.FirstOrDefault(m => m.id == id);
+        //        return result;
+        //    }
+        //}
 
-        public bool AddMovie(Movie movie)
-        {
-            try
-            {
-                using (var db = new CinemaContext())
-                {
-                    db.Movies.Add(movie);
-                    int affectedRows = db.SaveChanges();
-                    return affectedRows > 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+        //public bool AddMovie(Movie movie)
+        //{
+        //    try
+        //    {
+        //        using (var db = new CinemaContext())
+        //        {
+        //            db.Movies.Add(movie);
+        //            int affectedRows = db.SaveChanges();
+        //            return affectedRows > 0;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return false;
+        //    }
+        //}
 
-        public bool UpdateMovie(Movie movie)
-        {
-            try
-            {
-                using (var db = new CinemaContext())
-                {
-                    db.Movies.Update(movie);
-                    int affectedRows = db.SaveChanges();
-                    return affectedRows > 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+        //public bool UpdateMovie(Movie movie)
+        //{
+        //    try
+        //    {
+        //        using (var db = new CinemaContext())
+        //        {
+        //            db.Movies.Update(movie);
+        //            int affectedRows = db.SaveChanges();
+        //            return affectedRows > 0;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return false;
+        //    }
+        //}
 
-        public bool DeleteMovie(int id)
-        {
-            try
-            {
-                using (var db = new CinemaContext())
-                {
-                    var movieToDelete = db.Movies.FirstOrDefault(m => m.id == id);
-                    if (movieToDelete != null)
-                    {
-                        db.Movies.Remove(movieToDelete);
-                        int affectedRows = db.SaveChanges();
-                        if (affectedRows > 0)
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+        //public bool DeleteMovie(int id)
+        //{
+        //    try
+        //    {
+        //        using (var db = new CinemaContext())
+        //        {
+        //            var movieToDelete = db.Movies.FirstOrDefault(m => m.id == id);
+        //            if (movieToDelete != null)
+        //            {
+        //                db.Movies.Remove(movieToDelete);
+        //                int affectedRows = db.SaveChanges();
+        //                if (affectedRows > 0)
+        //                {
+        //                    return true;
+        //                }
+        //            }
+        //            return false;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return false;
+        //    }
+        //}
 
         public IEnumerable<Screening> GetAllScreenings()
         {
@@ -248,6 +248,30 @@ namespace movies_app.Repository
                             return true;
                         }
                     }
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool AddAvailableTickets(int screeningId, int count)
+        {
+            try
+            {
+                using (var db = new CinemaContext())
+                {
+                    var screening = db.Screenings.FirstOrDefault(s => s.Id == screeningId);
+
+                    if (screening != null)
+                    {
+                        screening.AvailableTickets += count;
+                        db.SaveChanges();
+                        return true;
+                    }
+
                     return false;
                 }
             }

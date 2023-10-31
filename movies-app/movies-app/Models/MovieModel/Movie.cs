@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using movies_app.Models.ScreeningModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace movies_app.Models.MovieModel
 {
+    [NotMapped]
     public class Movie
     {
         public int id { get; set; }
